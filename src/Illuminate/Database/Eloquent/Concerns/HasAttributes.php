@@ -123,7 +123,7 @@ trait HasAttributes
     /**
      * The storage format of the model's date columns.
      *
-     * @var string
+     * @var string|null
      */
     protected $dateFormat;
 
@@ -1332,7 +1332,11 @@ trait HasAttributes
      */
     public function fromJson($value, $asObject = false)
     {
-        return Json::decode($value ?? '', ! $asObject);
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return Json::decode($value, ! $asObject);
     }
 
     /**
@@ -1396,6 +1400,7 @@ trait HasAttributes
             return Hash::make($value);
         }
 
+        /** @phpstan-ignore staticMethod.notFound */
         if (! Hash::verifyConfiguration($value)) {
             throw new RuntimeException("Could not verify the hashed value's configuration.");
         }
